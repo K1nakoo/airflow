@@ -162,7 +162,7 @@ class Credentials:
         self.api_url = api_url
         self.api_token = api_token
         raw_env = os.getenv("AIRFLOW_CLI_ENVIRONMENT") or api_environment
-        if not re.match(r'^[a-zA-Z0-9_.-]+$', raw_env):
+        if not re.match(r"^[a-zA-Z0-9_.-]+$", raw_env):
             raise ValueError(
                 f"Invalid environment name: '{raw_env}'. "
                 "Only alphanumeric characters, dashes, and underscores are allowed."
