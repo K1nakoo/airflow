@@ -494,8 +494,15 @@ export const $BackfillResponse = {
             title: 'To Date'
         },
         dag_run_conf: {
-            additionalProperties: true,
-            type: 'object',
+            anyOf: [
+                {
+                    additionalProperties: true,
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
             title: 'Dag Run Conf'
         },
         is_paused: {
@@ -1376,6 +1383,18 @@ export const $ClearTaskInstancesBody = {
             type: 'boolean',
             title: 'Prevent Running Task',
             default: false
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string',
+                    maxLength: 1000
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
         }
     },
     additionalProperties: false,
@@ -4454,6 +4473,108 @@ export const $LastAssetEventResponse = {
     description: 'Last asset event response serializer.'
 } as const;
 
+export const $MaterializeAssetBody = {
+    properties: {
+        dag_run_id: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Dag Run Id'
+        },
+        data_interval_start: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data Interval Start'
+        },
+        data_interval_end: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Data Interval End'
+        },
+        logical_date: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Logical Date'
+        },
+        run_after: {
+            anyOf: [
+                {
+                    type: 'string',
+                    format: 'date-time'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Run After'
+        },
+        conf: {
+            anyOf: [
+                {
+                    additionalProperties: true,
+                    type: 'object'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Conf'
+        },
+        note: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Note'
+        },
+        partition_key: {
+            anyOf: [
+                {
+                    type: 'string'
+                },
+                {
+                    type: 'null'
+                }
+            ],
+            title: 'Partition Key'
+        }
+    },
+    additionalProperties: false,
+    type: 'object',
+    title: 'MaterializeAssetBody',
+    description: 'Materialize asset request.'
+} as const;
+
 export const $PatchTaskInstanceBody = {
     properties: {
         new_state: {
@@ -7519,31 +7640,6 @@ export const $DAGRunStates = {
     description: 'DAG Run States for responses.'
 } as const;
 
-export const $DAGRunTypes = {
-    properties: {
-        backfill: {
-            type: 'integer',
-            title: 'Backfill'
-        },
-        scheduled: {
-            type: 'integer',
-            title: 'Scheduled'
-        },
-        manual: {
-            type: 'integer',
-            title: 'Manual'
-        },
-        asset_triggered: {
-            type: 'integer',
-            title: 'Asset Triggered'
-        }
-    },
-    type: 'object',
-    required: ['backfill', 'scheduled', 'manual', 'asset_triggered'],
-    title: 'DAGRunTypes',
-    description: 'DAG Run Types for responses.'
-} as const;
-
 export const $DAGWithLatestDagRunsCollectionResponse = {
     properties: {
         total_entries: {
@@ -8287,18 +8383,19 @@ export const $GridTISummaries = {
 
 export const $HistoricalMetricDataResponse = {
     properties: {
-        dag_run_types: {
-            '$ref': '#/components/schemas/DAGRunTypes'
-        },
         dag_run_states: {
             '$ref': '#/components/schemas/DAGRunStates'
         },
         task_instance_states: {
             '$ref': '#/components/schemas/TaskInstanceStateCount'
+        },
+        state_count_limit: {
+            type: 'integer',
+            title: 'State Count Limit'
         }
     },
     type: 'object',
-    required: ['dag_run_types', 'dag_run_states', 'task_instance_states'],
+    required: ['dag_run_states', 'task_instance_states', 'state_count_limit'],
     title: 'HistoricalMetricDataResponse',
     description: 'Historical Metric Data serializer for responses.'
 } as const;
@@ -8913,25 +9010,7 @@ export const $Theme = {
     properties: {
         tokens: {
             additionalProperties: {
-                additionalProperties: {
-                    additionalProperties: {
-                        additionalProperties: {
-                            '$ref': '#/components/schemas/OklchColor'
-                        },
-                        propertyNames: {
-                            const: 'value'
-                        },
-                        type: 'object'
-                    },
-                    propertyNames: {
-                        enum: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
-                    },
-                    type: 'object'
-                },
-                propertyNames: {
-                    const: 'brand'
-                },
-                type: 'object'
+                '$ref': '#/components/schemas/ThemeColors'
             },
             propertyNames: {
                 const: 'colors'
@@ -8981,6 +9060,11 @@ export const $Theme = {
     required: ['tokens'],
     title: 'Theme',
     description: "JSON to modify Chakra's theme."
+} as const;
+
+export const $ThemeColors = {
+    additionalProperties: true,
+    type: 'object'
 } as const;
 
 export const $TokenType = {
